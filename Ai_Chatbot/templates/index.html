@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rule-Based Chatbot</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            text-align: center;
+        }
+
+        #chatbox {
+            width: 500px;
+            margin: 40px auto;
+            background: #2b2b2b;
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkgreen;
+        }
+
+        .user {
+            color: #4da6ff;
+            text-align: left;
+        }
+
+        .bot {
+            color: #00ff99;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h2> Rule-Based Chatbot</h2>
+
+<div id="chatbox">
+    <p class="bot"><b>Bot:</b> Hello! I am a rule-based chatbot. Ask me something.</p>
+</div>
+
+
+<input type="text" id="userInput" placeholder="Type a message...">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+function sendMessage() {
+    var userText = document.getElementById("userInput").value;
+    var chatbox = document.getElementById("chatbox");
+
+    if(userText.trim() === "") return;
+
+    chatbox.innerHTML += "<p class='user'><b>You:</b> " + userText + "</p>";
+
+    fetch("/get", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "message=" + userText
+    })
+    .then(response => response.json())
+    .then(data => {
+        chatbox.innerHTML += "<p class='bot'><b>Bot:</b> " + data.response + "</p>";
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
+
+    document.getElementById("userInput").value = "";
+}
+
+document.getElementById("userInput")
+.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
+
+</script>
+
+</body>
+</html>
